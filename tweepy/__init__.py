@@ -53,12 +53,8 @@ class Twitter(object):
         "Initialize Tweepy API object with RateLimitHandler auth."
         auth = RateLimitHandler(self.consumer_key, self.consumer_secret)
         for key, secret in self.access_tokens.values():
-            try:
-                auth.add_access_token(key, secret)
-            except TweepError, e:
-                print key, e
-                pass # no problem
-        print 'Token pool size: %d' % len(auth.tokens)
+            auth.add_access_token(key, secret)
+        # print 'Token pool size: %d' % len(auth.tokens)
         return API(auth)
             # retry_count=2, retry_delay=3,
             # wait_on_rate_limit=True, wait_on_rate_limit_notify=True
