@@ -160,7 +160,7 @@ def bind_api(**config):
                             time.sleep(sleep_time + 5)  # sleep for few extra sec
                     else: # prevent rate limit
                         error_msg = 'Rate limit reached, try again after %ss.' % sleep_time
-                        resp = request.Response(status_code=420) # mock
+                        resp = requests.Response(status_code=420) # mock
                         resp.reason = 'Enhance Your Calm'
                         resp.status_code = 420
                         raise TweepError(error_msg, resp)
