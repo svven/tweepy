@@ -104,6 +104,15 @@ class Twitter(object):
             user_id=user_id, since_id=since_id, count=200).items(count):
             yield s
 
+    def list_timeline(self, list_id, since_id=None, count=None):
+        """
+        https://dev.twitter.com/rest/reference/get/lists/statuses
+        http://docs.tweepy.org/en/latest/api.html#API.list_timeline
+        """
+        for s in Cursor(self.api.list_timeline, 
+            list_id=list_id, since_id=since_id, count=200).items(count):
+            yield s
+
     def home_timeline(self, user_id, since_id=None, count=None):
         """
         https://dev.twitter.com/rest/reference/get/statuses/home_timeline
