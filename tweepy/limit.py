@@ -124,7 +124,7 @@ class RateLimitHandler(OAuthHandler):
         if remaining == 0:
             self.refresh_rate_limits(key) # double check
 
-        if not self.verbose:
+        if self.verbose:
             print key.split('-')[0], resource, limit, remaining, reset
 
         return key, limit, remaining, reset
