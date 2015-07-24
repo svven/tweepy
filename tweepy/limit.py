@@ -26,7 +26,7 @@ class RateLimitHandler(OAuthHandler):
     # tokens = {} # static
     nolimits = {u'limit': None, u'remaining': None, u'reset': None}
 
-    def __init__(self, consumer_key, consumer_secret):
+    def __init__(self, consumer_key, consumer_secret, verbose=False):
         "Init tokens for current instance."
         super(RateLimitHandler, self).__init__(consumer_key, consumer_secret)
         
@@ -42,6 +42,7 @@ class RateLimitHandler(OAuthHandler):
         #   }
         # }
         self.fixed_access_token = None # e.g. for home_timeline
+        self.verbose = verbose
 
     def _parse_limits(self, limits):
         return limits and (limits.get('limit'), 
@@ -123,7 +124,8 @@ class RateLimitHandler(OAuthHandler):
         if remaining == 0:
             self.refresh_rate_limits(key) # double check
 
-        print key.split('-')[0], resource, limit, remaining, reset
+        if self.verbose:
+            print key.split('-')[0], resource, limit, remaining, reset
 
         return key, limit, remaining, reset
 
