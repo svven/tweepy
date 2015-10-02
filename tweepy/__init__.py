@@ -26,6 +26,10 @@ def debug(enable=True, level=1):
     import httplib
     httplib.HTTPConnection.debuglevel = level
 
+def chunks(l, n):
+    for i in xrange(0, len(l), n):
+        yield l[i:i+n]
+
 
 class Twitter(object):
     """
@@ -87,10 +91,6 @@ class Twitter(object):
                 ('screen_names' in kwargs and kwargs['screen_names'])
         assert param and items
 
-        def chunks(l, n):
-            for i in xrange(0, len(l), n):
-                yield l[i:i+n]
-
         for items_chunk in chunks(items, 100): # 100 ids at a time
             chunk = self.api.lookup_users(**dict([(param, items_chunk)]))
             for u in chunk: yield u
@@ -143,15 +143,35 @@ class Twitter(object):
         for followers_ids_chunk in Cursor(self.api.followers_ids, user_id=user_id).pages():
             for f in followers_ids_chunk: yield f
 
+    def lookup_friendships(self, user_id, **kwargs):
+        """
+        https://dev.twitter.com/rest/reference/get/friendships/lookup
+        Params: user_ids|screen_names
+        """
+        param = ('user_ids' in kwargs and 'user_ids') or \
+                ('screen_names' in kwargs and 'screen_names')
+        items = ('user_ids' in kwargs and kwargs['user_ids']) or \
+                ('screen_names' in kwargs and kwargs['screen_names'])
+        assert param and items
+
+        key, secret = self.access_tokens[user_id]
+        self.api.auth.fixed_access_token = key
+        try:
+            for items_chunk in chunks(items, 100): # 100 ids at a time
+                chunk = self.api.lookup_friendships(**dict([(param, items_chunk)]))
+                for r in chunk: yield r
+        finally:
+          self.api.auth.fixed_access_token = None
+
     def update_status(self, user_id, status):
-		"""
-		https://dev.twitter.com/rest/reference/post/statuses/update
-		http://docs.tweepy.org/en/latest/api.html#API.update_status
-		"""
-		key, secret = self.access_tokens[user_id]
-		self.api.auth.fixed_access_token = key
-		try:
-		  self.api.update_status(status)
-		finally:
-		  self.api.auth.fixed_access_token = None
+        """
+        https://dev.twitter.com/rest/reference/post/statuses/update
+        http://docs.tweepy.org/en/latest/api.html#API.update_status
+        """
+        key, secret = self.access_tokens[user_id]
+        self.api.auth.fixed_access_token = key
+        try:
+          self.api.update_status(status)
+        finally:
+          self.api.auth.fixed_access_token = None
 
