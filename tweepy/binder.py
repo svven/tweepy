@@ -163,7 +163,7 @@ def bind_api(**config):
                         resp = requests.Response() # mock
                         resp.reason = 'Enhance Your Calm'
                         resp.status_code = 420
-                        raise TweepError(error_msg, resp)
+                        raise TweepError(error_msg, resp, sleep_time)
 
                 # Apply authentication
                 if self.api.auth:
